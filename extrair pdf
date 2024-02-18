@@ -1,0 +1,46 @@
+import os
+import pdfplumber
+from PyPDF2 import PdfReader,PdfWriter
+
+caminhoArquivo = r'C:\Users\aurea\OneDrive\Documentos\PROJETOS\PYTHON\AULA\INFORMES2.pdf'
+pastaDestino = 'informes'
+
+with open(caminhoArquivo,'rb') as arquivo:
+
+    conteudo = PdfReader(arquivo)
+    
+    quantPaginas = len(conteudo.pages)
+
+    for pagina in range(quantPaginas):
+        
+        novoArquivo = PdfWriter()
+        novoArquivo.add_page(conteudo.pages[pagina])
+
+        conteudo2 = pdfplumber.open(arquivo)
+        paginaNome = conteudo2.pages[pagina] 
+        texto = paginaNome.extract_text().split('\n')
+
+        if('5952' in texto[13] or '1708' in texto[15] or '8045' in texto[15]):
+
+            texto2 = texto[10].split(' ')
+            
+            if('5952' in texto[13]):
+                #print(texto2)
+                guardar = ' ' + texto2[0] + ' Contribuicoes'
+                texto2.pop(0)
+                texto2.insert(len(texto2),guardar)
+                #print(texto2)
+            else:
+                guardar2 = ' '+ texto2[len(texto2)-1]
+                texto2.pop(len(texto2)-1)
+                texto2.insert(len(texto2),guardar2)
+                #print(texto2)
+            nome = ' '.join(texto2)
+            
+            nome = list(filter(lambda c:c not in './-',nome))
+            nome = ''.join(nome).strip()
+            nome = 'Informe de Rendimentos - '+ nome
+            print(nome)
+            gravar = os.path.join(pastaDestino,nome+'.pdf')
+            with open(gravar,'wb') as nomeArquivo:
+                novoArquivo.write(nomeArquivo)
